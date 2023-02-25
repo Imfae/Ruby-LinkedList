@@ -30,11 +30,8 @@ class LinkedList
   end
 
   def at(index)
-    position = 0
-    list_iterator do |current_node|
-      return current_node if position == index
-
-      position += 1
+    list_iterator do |current_node, current_index|
+      return current_node if current_index == index
     end
   end
 
@@ -53,11 +50,8 @@ class LinkedList
   end
 
   def find(input)
-    index = 0
-    list_iterator do |current_node|
-      return index if current_node.value == input
-
-      index += 1
+    list_iterator do |current_node, current_index|
+      return current_index if current_node.value == input
     end
     nil
   end
@@ -71,27 +65,21 @@ class LinkedList
   end
 
   def insert_at(input, index)
-    position = 0
     if index.zero?
       prepend(input)
     else
-      list_iterator do |current_node|
-        return current_node.next_node = Node.new(input, current_node.next_node) if position == (index - 1)
-
-        position += 1
+      list_iterator do |current_node, current_index|
+        return current_node.next_node = Node.new(input, current_node.next_node) if current_index == (index - 1)
       end
     end
   end
 
   def remove_at(index)
-    position = 0
     if index.zero?
       @head = @head.next_node
     else
-      list_iterator do |current_node|
-        return current_node.next_node = current_node.next_node.next_node if position == (index - 1)
-
-        position += 1
+      list_iterator do |current_node, current_index|
+        return current_node.next_node = current_node.next_node.next_node if current_index == (index - 1)
       end
     end
   end
@@ -100,9 +88,11 @@ class LinkedList
 
   def list_iterator
     current_node = @head
+    current_index = 0
     until current_node.next_node.nil?
-      yield(current_node) if block_given?
+      yield(current_node, current_index) if block_given?
       current_node = current_node.next_node
+      current_index += 1
     end
     current_node
   end
